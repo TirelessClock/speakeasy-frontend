@@ -1,10 +1,10 @@
 const socket = io('https://speakeasy-backend.onrender.com/');
 
 const form = document.getElementById("send-container");
-const messageInput = document.getElementById("messageInp");
+const messageInput = document.getElementById("message_inp");
 const messageContainer = document.querySelector(".messages-region");
 const messageIconTop = document.getElementById("icon_top");
-const nameInput = document.getElementById("nickname");
+const nameInput = document.getElementById("nickname_textbox");
 const form2 = document.getElementById("name_input");
 const side_bar = document.getElementById("online-bar")
 var audio = new Audio('ting.mp3');
@@ -46,21 +46,31 @@ const typing_indicator = (name) => {
     const messageElement = document.getElementById("typing-indc");
     // messageElement.classList.add("istyping");
     messageElement.innerText = `${name} is typing...`;
-
 }
 
-const left_chat = (message) => {
+const leave_chat = (name) => {
+    const leaveMessage = `< ${name} has left the chat >`;
+
+    // Find and remove the corresponding user element from the sidebar
+    const userElements = document.querySelectorAll(".nicknames");
+    userElements.forEach(element => {
+        if (element.innerText === name) {
+            element.remove();
+        }
+    });
+
+    // Display the leave message in the main chat area
     const messageElement = document.createElement('div');
-    messageElement.innerText = message;
+    messageElement.innerText = leaveMessage;
     messageElement.classList.add("new-user");
 
     audio.play();
     messageContainer.append(messageElement);
     messageIconTop.href = "icon-light.png";
-    setTimeout(function(){
+    setTimeout(function () {
         messageIconTop.href = "icon-dark.png";
-    },4000)
-}
+    }, 4000);
+};
 
 const append_new_message = (message, position) => {
     const messageElement = document.createElement('div');
@@ -135,6 +145,9 @@ socket.on('receive', data=>{
 })
 
 socket.on('leave', name =>{
-    left_chat(`< ${name} has left the chat >`)
+    // left_chat(`< ${name} has left the chat >`)
+    if (name != null) {
+        leave_chat(name);
+    }
 })
 
